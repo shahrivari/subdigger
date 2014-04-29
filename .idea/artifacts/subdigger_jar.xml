@@ -1,0 +1,11 @@
+<component name="ArtifactManager">
+  <artifact type="jar" build-on-make="true" name="subdigger:jar">
+    <output-path>$PROJECT_DIR$/out/</output-path>
+    <root id="archive" name="subdigger.jar">
+      <element id="module-output" name="subdigger" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/lib/hppc-0.6.0.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/lib/guava-16.0.1.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/lib/commons-cli-1.2.jar" path-in-jar="/" />
+    </root>
+  </artifact>
+</component>
