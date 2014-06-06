@@ -35,16 +35,18 @@ public class SMPEnumerator {
         uniqueCap = cap;
     }
 
-    //    private static int reportStep = 10000000;
-    private static boolean verbose = true;
+    private static long maxCount = Long.MAX_VALUE;
 
-//    public static int getReportStep() {
-//        return reportStep;
-//    }
-//
-//    public static void setReportStep(int reportStep) {
-//        SMPEnumerator.reportStep = reportStep;
-//    }
+    public static long getMaxCount() {
+        return maxCount;
+    }
+
+    public static void setMaxCount(long maxCount) {
+        SMPEnumerator.maxCount = maxCount;
+    }
+
+
+    private static boolean verbose = true;
 
     public static boolean isVerbose() {
         return verbose;
@@ -94,7 +96,7 @@ public class SMPEnumerator {
                     final LongLongOpenHashMap luniqueMap = new LongLongOpenHashMap();
 
                     while (bq.size() > 0) {
-                        //if(found.get()>50000000000L) return;
+                        if (found.get() > maxCount) return;
                         SMPState top = null;
                         try {
                             top = bq.poll();
@@ -168,5 +170,4 @@ public class SMPEnumerator {
 
         return found.get();
     }
-
 }
