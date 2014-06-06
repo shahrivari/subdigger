@@ -35,16 +35,16 @@ public class SMPEnumerator {
         uniqueCap = cap;
     }
 
-    private static int reportStep = 10000000;
+    //    private static int reportStep = 10000000;
     private static boolean verbose = true;
 
-    public static int getReportStep() {
-        return reportStep;
-    }
-
-    public static void setReportStep(int reportStep) {
-        SMPEnumerator.reportStep = reportStep;
-    }
+//    public static int getReportStep() {
+//        return reportStep;
+//    }
+//
+//    public static void setReportStep(int reportStep) {
+//        SMPEnumerator.reportStep = reportStep;
+//    }
 
     public static boolean isVerbose() {
         return verbose;
@@ -56,7 +56,7 @@ public class SMPEnumerator {
 
     public static long enumerateNonIsoInParallel(final Graph graph, final int k, final int thread_count, final String out_path) throws IOException, InterruptedException {
         final AtomicLong found = new AtomicLong(0);
-        final AtomicLong lastReport = new AtomicLong(0);
+        //final AtomicLong lastReport = new AtomicLong(0);
         final ArrayDeque<SMPState> queue = new ArrayDeque<SMPState>();
         for (int v : graph.getVertices()) {
             SMPState state = new SMPState(v, graph.getNeighbors(v));
@@ -94,6 +94,7 @@ public class SMPEnumerator {
                     final LongLongOpenHashMap luniqueMap = new LongLongOpenHashMap();
 
                     while (bq.size() > 0) {
+                        //if(found.get()>50000000000L) return;
                         SMPState top = null;
                         try {
                             top = bq.poll();
@@ -135,11 +136,6 @@ public class SMPEnumerator {
                                             uniqueMap.clear();
                                         }
                                     }
-
-                                    if (verbose && found.get() % reportStep == 0 && found.get() != lastReport.get()) {
-                                        lastReport.set(found.get());
-                                        System.out.printf("Found: %,d   \t LabelSet: %,d\n", found.get(), signatureRepo.size());
-                                    }
                                 } else {
                                     SMPState new_state = state.expand(w, graph);
                                     if (new_state.extension.size() > 0)
@@ -147,6 +143,11 @@ public class SMPEnumerator {
                                 }
                             }
                         }
+                        if (verbose) {
+                            //lastReport.set(found.get());
+                            System.out.printf("Found: %,d   \t LabelSet: %,d\n", found.get(), signatureRepo.size());
+                        }
+
                     }
                     signatureRepo.add(uniqueMap);
                     signatureRepo.add(luniqueMap, k);

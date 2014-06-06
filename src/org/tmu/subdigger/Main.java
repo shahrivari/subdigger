@@ -21,7 +21,7 @@ public class Main {
         options.addOption("o", "output", true, "the output file name (default out.txt)");
         options.addOption("um", true, "the max size of unique map.");
         options.addOption("lm", true, "the max size of unique map.");
-        options.addOption("rs", true, "the progress report step default 10,000,000.");
+//        options.addOption("rs", true, "the progress report step default 10,000,000.");
         options.addOption("n", "nonisomorphic", false, "enumerate just nonisomorphic subgraphs.");
         options.addOption("c", "count", false, "count all subgraphs");
         options.addOption("t", "threads", true, "number of threads to use");
@@ -77,10 +77,10 @@ public class Main {
                     SMPEnumerator.setUniqueCap(Integer.parseInt(line.getOptionValue("um")));
                 }
 
-                if (line.hasOption("rs"))
-                    SMPEnumerator.setReportStep(Integer.parseInt(line.getOptionValue("rs")));
-                else
-                    SMPEnumerator.setReportStep(10000000);
+//                if (line.hasOption("rs"))
+//                    SMPEnumerator.setReportStep(Integer.parseInt(line.getOptionValue("rs")));
+//                else
+//                    SMPEnumerator.setReportStep(10000000);
 
 
                 if (line.hasOption("lm")) {
