@@ -25,7 +25,7 @@ public class SignatureRepo {
         SignatureRepo.capacity = capacity;
     }
 
-    static int capacity = 64 * 1000 * 1000;
+    static int capacity = 40 * 1000 * 1000;
 
 
     FileWriter writer;

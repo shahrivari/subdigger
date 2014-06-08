@@ -20,7 +20,7 @@ public class Main {
         options.addOption("s", "size", true, "size of subgraphs to enumerate.");
         options.addOption("o", "output", true, "the output file name (default out.txt)");
         options.addOption("um", true, "the max size of unique map.");
-        options.addOption("lm", true, "the max size of unique map.");
+        options.addOption("lm", true, "the max size of label map.");
         options.addOption("mc", true, "maximum subgraphs count to stop. Default is infinity i.e. enumerate all.");
         options.addOption("n", "nonisomorphic", false, "enumerate just nonisomorphic subgraphs.");
         options.addOption("c", "count", false, "count all subgraphs");
@@ -73,10 +73,6 @@ public class Main {
                 graph.printInfo();
                 stopwatch.reset().start();
 
-                if (line.hasOption("um")) {
-                    SMPEnumerator.setUniqueCap(Integer.parseInt(line.getOptionValue("um")));
-                }
-
                 if (line.hasOption("mc")) {
                     SMPEnumerator.setMaxCount(Long.parseLong(line.getOptionValue("mc")));
                     System.out.printf("Subgraph count is bounded to %,d.\n", SMPEnumerator.getMaxCount());
@@ -84,9 +80,16 @@ public class Main {
                     SMPEnumerator.setMaxCount(Long.MAX_VALUE);
 
 
+                if (line.hasOption("um")) {
+                    SMPEnumerator.setUniqueCap(Integer.parseInt(line.getOptionValue("um")));
+                }
+                System.out.printf("Unique map size: %,d.\n", SMPEnumerator.getUniqueCap());
+
+
                 if (line.hasOption("lm")) {
                     SignatureRepo.setCapacity(Integer.parseInt(line.getOptionValue("lm")));
                 }
+                System.out.printf("Label map size: %,d.\n", SignatureRepo.getCapacity());
 
                 if (line.hasOption("silent"))
                     SMPEnumerator.setVerbose(false);
