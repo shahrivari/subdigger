@@ -2,7 +2,9 @@ package org.tmu.subdigger;
 
 import com.carrotsearch.hppc.IntArrayList;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 /**
  * Created by Saeed on 4/12/14.
@@ -41,6 +43,21 @@ public class SMPState {
         }
 
         return new_state;
+    }
+
+    public static List<SMPState> getAllBistates(Graph graph) {
+        List<SMPState> list = new ArrayList<SMPState>();
+
+        for (int v : graph.getVertices()) {
+            SMPState state = new SMPState(v, graph.getNeighbors(v));
+            while (!state.extension.isEmpty()) {
+                int w = state.extension.get(state.extension.size() - 1);
+                state.extension.remove(state.extension.size() - 1);
+                list.add(state.expand(w, graph));
+            }
+        }
+
+        return list;
     }
 
     @Override

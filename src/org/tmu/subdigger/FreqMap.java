@@ -1,6 +1,7 @@
 package org.tmu.subdigger;
 
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by Saeed on 4/17/14.
@@ -53,6 +54,13 @@ final public class FreqMap {
 
     public int size() {
         return map.size();
+    }
+
+    public long totalFreq() {
+        long sum = 0;
+        for (Map.Entry<BoolArray, Count> e : map.entrySet())
+            sum += e.getValue().get();
+        return sum;
     }
 
     public void clear() {
