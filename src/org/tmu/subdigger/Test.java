@@ -1,5 +1,9 @@
 package org.tmu.subdigger;
 
+import com.carrotsearch.hppc.LongLongOpenHashMap;
+import com.carrotsearch.hppc.cursors.LongLongCursor;
+import com.google.common.base.Stopwatch;
+
 import java.io.IOException;
 import java.util.List;
 
@@ -9,20 +13,21 @@ import java.util.List;
 public class Test {
 
     public static void main(String[] args) throws IOException, InterruptedException {
-        int k = 4;
+        int k = 5;
+        Stopwatch stopwatch=Stopwatch.createUnstarted();
         long mem = Runtime.getRuntime().freeMemory();
-        Graph g = HashGraph.readStructureFromFile("x:\\networks\\marusumi\\celegans.txt");
-        SMPEnumerator.setVerbose(true);
+        Graph g = HashGraph.readStructureFromFile("d:\\temp\\celegans.txt");
+        SMPEnumerator.setVerbose(false);
+        stopwatch.start();
         long found = SMPEnumerator.enumerateNonIsoInParallel(g, k, 4, "x:\\out.txt");
-        System.out.printf("Found: %,d\n", found);
+        System.out.printf("Found: %,d \t time:%s\n", found,stopwatch);
 
-        List<SMPState> list = SMPState.getAllBistates(g);
-        found = 0;
-
-        for (SMPState state : list)
-            found += SMPEnumerator.enumerateState(g, k, state).totalFreq();
-
-        System.out.printf("Found: %,d\n", found);
+        stopwatch.reset().start();
+//        LongLongOpenHashMap res=SubgraphEnumerator.enumerateAllHPPC(g, k);
+//        found=0;
+//        for(LongLongCursor cur:res)
+//            found+=cur.value;
+        System.out.printf("Found: %,d \t time:%s\n", found,stopwatch);
 
         System.out.printf("Used: %,d", Runtime.getRuntime().freeMemory() - mem);
     }

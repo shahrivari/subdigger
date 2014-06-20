@@ -45,7 +45,7 @@ public class SMPState {
         return new_state;
     }
 
-    public static List<SMPState> getAllBistates(Graph graph) {
+    public static List<SMPState> getAllBiStates(Graph graph) {
         List<SMPState> list = new ArrayList<SMPState>();
 
         for (int v : graph.getVertices()) {
@@ -59,6 +59,15 @@ public class SMPState {
 
         return list;
     }
+
+    public static List<SMPState> getAllOneStates(Graph graph) {
+        List<SMPState> list = new ArrayList<SMPState>();
+
+        for (int v : graph.getVertices())
+            list.add(new SMPState(v, graph.getNeighbors(v)));
+        return list;
+    }
+
 
     @Override
     public String toString() {
