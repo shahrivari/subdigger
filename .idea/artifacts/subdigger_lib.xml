@@ -1,8 +1,0 @@
-<component name="ArtifactManager">
-  <artifact type="jar" name="subdigger-lib">
-    <output-path>$PROJECT_DIR$/out/</output-path>
-    <root id="archive" name="subdigger-lib.jar">
-      <element id="module-output" name="subdigger" />
-    </root>
-  </artifact>
-</component>

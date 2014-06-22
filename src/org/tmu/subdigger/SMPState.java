@@ -1,6 +1,7 @@
 package org.tmu.subdigger;
 
 import com.carrotsearch.hppc.IntArrayList;
+import com.google.common.collect.Ordering;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -59,6 +60,21 @@ public class SMPState {
 
         return list;
     }
+
+    public static List<SMPState> getAllBiStatesOrderedByLoad(final Graph graph) {
+        List<SMPState> list = getAllBiStates(graph);
+        Ordering<SMPState> ordering = new Ordering<SMPState>() {
+            @Override
+            public int compare(SMPState state1, SMPState state2) {
+                int a = graph.getDegree(state1.subgraph[0]) + graph.getDegree(state1.subgraph[1]);
+                int b = graph.getDegree(state2.subgraph[0]) + graph.getDegree(state2.subgraph[1]);
+                return a > b ? +1 : a < b ? -1 : 0;
+            }
+        };
+        List<SMPState> sorted = ordering.reverse().sortedCopy(list);
+        return sorted;
+    }
+
 
     public static List<SMPState> getAllOneStates(Graph graph) {
         List<SMPState> list = new ArrayList<SMPState>();

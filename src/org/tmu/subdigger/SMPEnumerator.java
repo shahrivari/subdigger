@@ -69,7 +69,6 @@ public class SMPEnumerator {
             }
         }
 
-
         Ordering<SMPState> ordering = new Ordering<SMPState>() {
             @Override
             public int compare(SMPState state1, SMPState state2) {
