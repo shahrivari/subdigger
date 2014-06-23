@@ -7,7 +7,7 @@ import java.util.Map;
  * Created by Saeed on 4/17/14.
  */
 final public class FreqMap {
-    final class Count {
+    final public class Count {
         long value;
 
         Count(int value) {
@@ -42,7 +42,7 @@ final public class FreqMap {
 
     }
 
-    HashMap<BoolArray, Count> map = new HashMap<BoolArray, Count>();
+    public HashMap<BoolArray, Count> map = new HashMap<BoolArray, Count>();
 
     public void add(BoolArray arr, int occurrences) {
         Count freq = map.get(arr);

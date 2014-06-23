@@ -1,6 +1,7 @@
 package org.tmu.subdigger;
 
 import com.carrotsearch.hppc.IntArrayList;
+import com.carrotsearch.hppc.cursors.IntCursor;
 import com.google.common.collect.Ordering;
 
 import java.util.ArrayList;
@@ -87,8 +88,37 @@ public class SMPState {
 
     @Override
     public String toString() {
-        String result = Arrays.toString(subgraph) + "  extentsion:" + extension.toString();//Arrays.toString(extension);
-        return result;
+        StringBuilder result = new StringBuilder();
+        for (int x : subgraph)
+            result.append(x + ",");
+        result.deleteCharAt(result.length() - 1);
+        result.append("#");
+
+        for (IntCursor x : extension)
+            result.append(x.value + ",");
+        result.deleteCharAt(result.length() - 1);
+        return result.toString();
+
+//        String result = Arrays.toString(subgraph) + "  extentsion:" + extension.toString();//Arrays.toString(extension);
+//        return result;
+    }
+
+    public static SMPState fromString(String s) {
+        SMPState state = new SMPState();
+        String[] tokens = s.split("#");
+        if (tokens.length != 2)
+            throw new IllegalArgumentException("Bad input String.");
+
+        IntArrayList list = new IntArrayList();
+        for (String x : tokens[0].split(","))
+            list.add(Integer.parseInt(x));
+        state.subgraph = list.toArray();
+        list.clear();
+
+        for (String x : tokens[1].split(","))
+            list.add(Integer.parseInt(x));
+        state.extension = list;
+        return state;
     }
 
 }

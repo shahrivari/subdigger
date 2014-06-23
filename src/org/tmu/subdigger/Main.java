@@ -63,11 +63,13 @@ public class Main {
                 System.exit(-1);
             } else {
                 input_path = line.getOptionValue("i");
+
+                graph = HashGraph.readStructureFromFile(input_path);
                 if (graph.vertexCount() < 20000) {
                     System.out.printf("Graph is small. Using adjacency matrix.\n");
                     graph = MatGraph.readStructureFromFile(input_path);
-                } else
-                    graph = HashGraph.readStructureFromFile(input_path);
+                }
+
 
                 System.out.printf("Graph loaded in %s msecs.\n", stopwatch.elapsed(TimeUnit.MILLISECONDS));
                 graph.printInfo();
