@@ -1,7 +1,5 @@
 package org.tmu.subdigger;
 
-import com.carrotsearch.hppc.LongLongOpenHashMap;
-import com.carrotsearch.hppc.cursors.LongLongCursor;
 import com.google.common.base.Stopwatch;
 
 import java.io.IOException;
@@ -13,10 +11,21 @@ import java.util.List;
 public class Test {
 
     public static void main(String[] args) throws IOException, InterruptedException {
-        int k = 5;
+        int k = 3;
         Stopwatch stopwatch=Stopwatch.createUnstarted();
         long mem = Runtime.getRuntime().freeMemory();
-        Graph g = HashGraph.readStructureFromFile("d:\\temp\\celegans.txt");
+        Graph g = HashGraph.readStructureFromFile("X:\\networks\\mrsub\\celegans.txt");
+        List<SMPState> states = SMPState.getAllBiStates(g);
+
+        String s;
+        SMPState st;
+        for (SMPState state : states) {
+            s = state.toString();
+            st = SMPState.fromString(s);
+            if (!st.toString().equals(s))
+                throw new IllegalStateException();
+        }
+
         SMPEnumerator.setVerbose(false);
         stopwatch.start();
         long found = SMPEnumerator.enumerateNonIsoInParallel(g, k, 4, "x:\\out.txt");

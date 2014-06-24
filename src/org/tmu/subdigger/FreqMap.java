@@ -14,11 +14,21 @@ final public class FreqMap {
             this.value = value;
         }
 
+        Count(long value) {
+            this.value = value;
+        }
+
         public long get() {
             return value;
         }
 
         public long getAndAdd(int delta) {
+            long result = value;
+            value = result + delta;
+            return result;
+        }
+
+        public long getAndAdd(long delta) {
             long result = value;
             value = result + delta;
             return result;
@@ -51,6 +61,15 @@ final public class FreqMap {
         else
             freq.getAndAdd(occurrences);
     }
+
+    public void add(BoolArray arr, long occurrences) {
+        Count freq = map.get(arr);
+        if (freq == null)
+            map.put(arr, new Count(occurrences));
+        else
+            freq.getAndAdd(occurrences);
+    }
+
 
     public int size() {
         return map.size();

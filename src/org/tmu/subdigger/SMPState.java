@@ -89,14 +89,18 @@ public class SMPState {
     @Override
     public String toString() {
         StringBuilder result = new StringBuilder();
-        for (int x : subgraph)
+        if (subgraph.length > 0) {
+            for (int x : subgraph)
             result.append(x + ",");
         result.deleteCharAt(result.length() - 1);
+        }
         result.append("#");
 
-        for (IntCursor x : extension)
+        if (extension.size() > 0) {
+            for (IntCursor x : extension)
             result.append(x.value + ",");
         result.deleteCharAt(result.length() - 1);
+        }
         return result.toString();
 
 //        String result = Arrays.toString(subgraph) + "  extentsion:" + extension.toString();//Arrays.toString(extension);
@@ -105,19 +109,19 @@ public class SMPState {
 
     public static SMPState fromString(String s) {
         SMPState state = new SMPState();
-        String[] tokens = s.split("#");
-        if (tokens.length != 2)
+        if (!s.contains("#"))
             throw new IllegalArgumentException("Bad input String.");
 
+        String[] tokens = s.split("#");
         IntArrayList list = new IntArrayList();
         for (String x : tokens[0].split(","))
             list.add(Integer.parseInt(x));
         state.subgraph = list.toArray();
-        list.clear();
 
-        for (String x : tokens[1].split(","))
-            list.add(Integer.parseInt(x));
-        state.extension = list;
+        state.extension = new IntArrayList();
+        if (tokens.length > 1)
+            for (String x : tokens[1].split(","))
+                state.extension.add(Integer.parseInt(x));
         return state;
     }
 
