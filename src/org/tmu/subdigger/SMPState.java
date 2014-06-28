@@ -85,6 +85,20 @@ public class SMPState {
         return list;
     }
 
+    public static List<SMPState> getAllOneStatesOrderedByLoad(final Graph graph) {
+        List<SMPState> list = getAllOneStates(graph);
+        Ordering<SMPState> ordering = new Ordering<SMPState>() {
+            @Override
+            public int compare(SMPState state1, SMPState state2) {
+                int a = graph.getDegree(state1.subgraph[0]);
+                int b = graph.getDegree(state2.subgraph[0]);
+                return a > b ? +1 : a < b ? -1 : 0;
+            }
+        };
+        List<SMPState> sorted = ordering.reverse().sortedCopy(list);
+        return sorted;
+    }
+
 
     @Override
     public String toString() {

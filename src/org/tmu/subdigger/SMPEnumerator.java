@@ -2,10 +2,8 @@ package org.tmu.subdigger;
 
 import com.carrotsearch.hppc.LongLongOpenHashMap;
 import com.google.common.collect.HashMultiset;
-import com.google.common.collect.Ordering;
 
 import java.io.IOException;
-import java.util.ArrayDeque;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Stack;
@@ -59,26 +57,37 @@ public class SMPEnumerator {
     public static long enumerateNonIsoInParallel(final Graph graph, final int k, final int thread_count, final String out_path) throws IOException, InterruptedException {
         final AtomicLong found = new AtomicLong(0);
         //final AtomicLong lastReport = new AtomicLong(0);
-        final ArrayDeque<SMPState> queue = new ArrayDeque<SMPState>();
-        for (int v : graph.getVertices()) {
-            SMPState state = new SMPState(v, graph.getNeighbors(v));
-            while (!state.extension.isEmpty()) {
-                int w = state.extension.get(state.extension.size() - 1);
-                state.extension.remove(state.extension.size() - 1);
-                queue.push(state.expand(w, graph));
-            }
-        }
+//        final ArrayDeque<SMPState> queue = new ArrayDeque<SMPState>();
+//        for (int v : graph.getVertices()) {
+//            SMPState state = new SMPState(v, graph.getNeighbors(v));
+//            while (!state.extension.isEmpty()) {
+//                int w = state.extension.get(state.extension.size() - 1);
+//                state.extension.remove(state.extension.size() - 1);
+//                queue.push(state.expand(w, graph));
+//            }
+//        }
+//
+//        Ordering<SMPState> ordering = new Ordering<SMPState>() {
+//            @Override
+//            public int compare(SMPState state1, SMPState state2) {
+//                int a = graph.getDegree(state1.subgraph[0]) + graph.getDegree(state1.subgraph[1]);
+//                int b = graph.getDegree(state2.subgraph[0]) + graph.getDegree(state2.subgraph[1]);
+//                return a > b ? +1 : a < b ? -1 : 0;
+//            }
+//        };
+//        List<SMPState> sorted = ordering.reverse().sortedCopy(queue);
+        List<SMPState> sorted = null;
+        if (graph.vertexCount() < 10000)
+            sorted = SMPState.getAllBiStatesOrderedByLoad(graph);
+        else if (graph.vertexCount() < 100000)
+            sorted = SMPState.getAllOneStatesOrderedByLoad(graph);
+        else
+            sorted = SMPState.getAllOneStates(graph);
 
-        Ordering<SMPState> ordering = new Ordering<SMPState>() {
-            @Override
-            public int compare(SMPState state1, SMPState state2) {
-                int a = graph.getDegree(state1.subgraph[0]) + graph.getDegree(state1.subgraph[1]);
-                int b = graph.getDegree(state2.subgraph[0]) + graph.getDegree(state2.subgraph[1]);
-                return a > b ? +1 : a < b ? -1 : 0;
-            }
-        };
-        List<SMPState> sorted = ordering.reverse().sortedCopy(queue);
         final ConcurrentLinkedQueue<SMPState> bq = new ConcurrentLinkedQueue<SMPState>(sorted);
+
+        if (verbose)
+            System.out.printf("Initial states: %,d\n", bq.size());
 
         final SignatureRepo signatureRepo = new SignatureRepo(out_path);
         signatureRepo.setVerbose(verbose);

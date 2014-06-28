@@ -3,7 +3,6 @@ package org.tmu.subdigger;
 import com.google.common.base.Stopwatch;
 
 import java.io.IOException;
-import java.util.List;
 
 /**
  * Created by Saeed on 6/16/14.
@@ -12,21 +11,27 @@ public class Test {
 
     public static void main(String[] args) throws IOException, InterruptedException {
         int k = 3;
-        Stopwatch stopwatch=Stopwatch.createUnstarted();
+        System.in.read();
+        Stopwatch stopwatch = Stopwatch.createStarted();
         long mem = Runtime.getRuntime().freeMemory();
-        Graph g = HashGraph.readStructureFromFile("X:\\networks\\mrsub\\celegans.txt");
-        List<SMPState> states = SMPState.getAllBiStates(g);
+        Graph g = HashGraph.readStructureFromFile("F:\\nets\\web-BerkStan.txt");
+        g.printInfo();
+        System.out.printf("Used: %,d\n", mem - Runtime.getRuntime().freeMemory());
+        System.out.printf("Time:%s\n", stopwatch);
+        stopwatch.reset();
 
-        String s;
-        SMPState st;
-        for (SMPState state : states) {
-            s = state.toString();
-            st = SMPState.fromString(s);
-            if (!st.toString().equals(s))
-                throw new IllegalStateException();
-        }
+//        List<SMPState> states = SMPState.getAllBiStates(g);
+//
+//        String s;
+//        SMPState st;
+//        for (SMPState state : states) {
+//            s = state.toString();
+//            st = SMPState.fromString(s);
+//            if (!st.toString().equals(s))
+//                throw new IllegalStateException();
+//        }
 
-        SMPEnumerator.setVerbose(false);
+        SMPEnumerator.setVerbose(true);
         stopwatch.start();
         long found = SMPEnumerator.enumerateNonIsoInParallel(g, k, 4, "x:\\out.txt");
         System.out.printf("Found: %,d \t time:%s\n", found,stopwatch);
@@ -36,9 +41,8 @@ public class Test {
 //        found=0;
 //        for(LongLongCursor cur:res)
 //            found+=cur.value;
-        System.out.printf("Found: %,d \t time:%s\n", found,stopwatch);
+//        System.out.printf("Found: %,d \t time:%s\n", found,stopwatch);
 
-        System.out.printf("Used: %,d", Runtime.getRuntime().freeMemory() - mem);
     }
 
 }

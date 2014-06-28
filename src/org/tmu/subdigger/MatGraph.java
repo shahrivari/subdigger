@@ -114,14 +114,16 @@ public class MatGraph implements Graph {
             Adjacency adj = table.get(v);
 
             adj.outArr = adj.outSet.toArray();
-            Arrays.sort(adj.outArr);
+            if (vertexCount() < 10000)
+                Arrays.sort(adj.outArr);
             for (int w : adj.outArr)
                 adjArr[v * table.size() + w] = true;
             adj.outSet = new IntOpenHashSet(adj.outArr.length, 0.5f);
             adj.outSet.add(adj.outArr);
 
             adj.allArr = adj.allSet.toArray();
-            Arrays.sort(adj.allArr);
+            if (vertexCount() < 10000)
+                Arrays.sort(adj.allArr);
             adj.allSet = new IntOpenHashSet(adj.allArr.length, 0.5f);
             adj.allSet.add(adj.allArr);
             edgeCount += adj.outArr.length;
