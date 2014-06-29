@@ -23,6 +23,13 @@ public class MatGraph implements Graph {
         return vertices.size();
     }
 
+    public int edgeCount(){
+        int sum=0;
+        for(int v:vertices)
+            sum+=getNeighbors(v).length;
+        return sum;
+    }
+
     @Override
     public Set<Integer> getVertices() {
         return vertices;

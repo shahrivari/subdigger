@@ -11,14 +11,14 @@ public class Test {
 
     public static void main(String[] args) throws IOException, InterruptedException {
         int k = 3;
-        System.in.read();
         Stopwatch stopwatch = Stopwatch.createStarted();
         long mem = Runtime.getRuntime().freeMemory();
-        Graph g = HashGraph.readStructureFromFile("F:\\nets\\web-BerkStan.txt");
+        Graph g = HashGraph.readStructureFromFile("/home/saeed/Documents/marusumi2/web-Stanford.txt");
         g.printInfo();
         System.out.printf("Used: %,d\n", mem - Runtime.getRuntime().freeMemory());
         System.out.printf("Time:%s\n", stopwatch);
         stopwatch.reset();
+        SMPState.getSeedStates(g);
 
 //        List<SMPState> states = SMPState.getAllBiStates(g);
 //

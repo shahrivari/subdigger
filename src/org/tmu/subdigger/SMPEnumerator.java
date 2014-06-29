@@ -76,18 +76,15 @@ public class SMPEnumerator {
 //            }
 //        };
 //        List<SMPState> sorted = ordering.reverse().sortedCopy(queue);
-        List<SMPState> sorted = null;
-        if (graph.vertexCount() < 10000)
-            sorted = SMPState.getAllBiStatesOrderedByLoad(graph);
-        else if (graph.vertexCount() < 100000)
-            sorted = SMPState.getAllOneStatesOrderedByLoad(graph);
-        else
-            sorted = SMPState.getAllOneStates(graph);
+        List<SMPState> sorted = SMPState.getSeedStates(graph); //null;
+//        if (graph.vertexCount() < 100000)
+//            sorted = SMPState.getAllBiStatesOrderedByLoad(graph);
+//        else
+//            sorted = SMPState.getAllBiStates(graph);
 
         final ConcurrentLinkedQueue<SMPState> bq = new ConcurrentLinkedQueue<SMPState>(sorted);
 
-        if (verbose)
-            System.out.printf("Initial states: %,d\n", bq.size());
+        System.out.printf("Initial states: %,d\n", bq.size());
 
         final SignatureRepo signatureRepo = new SignatureRepo(out_path);
         signatureRepo.setVerbose(verbose);

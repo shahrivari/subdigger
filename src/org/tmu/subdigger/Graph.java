@@ -15,6 +15,8 @@ public interface Graph {
 
     public int vertexCount();
 
+    public int edgeCount();
+
     public Set<Integer> getVertices();
 
     public int getDegree(int vertex);
