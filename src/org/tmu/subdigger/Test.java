@@ -13,7 +13,7 @@ public class Test {
         int k = 3;
         Stopwatch stopwatch = Stopwatch.createStarted();
         long mem = Runtime.getRuntime().freeMemory();
-        Graph g = HashGraph.readStructureFromFile("/home/saeed/Documents/marusumi2/web-Stanford.txt");
+        Graph g = HashGraph.readStructureFromFile("F:\\nets\\web-BerkStan.txt");
         g.printInfo();
         System.out.printf("Used: %,d\n", mem - Runtime.getRuntime().freeMemory());
         System.out.printf("Time:%s\n", stopwatch);

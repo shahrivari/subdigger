@@ -1,11 +1,8 @@
 package org.tmu.subdigger;
 
-import com.carrotsearch.hppc.FloatArrayList;
 import com.carrotsearch.hppc.IntArrayList;
 import com.carrotsearch.hppc.cursors.IntCursor;
 import com.google.common.collect.Ordering;
-import com.google.common.math.DoubleMath;
-import com.google.common.math.IntMath;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -106,51 +103,34 @@ public class SMPState {
 
         List<SMPState> one_states = getAllOneStatesOrderedByLoad(graph);
         IntArrayList degrees=IntArrayList.newInstance();
-
-        int cut_point=100;
-
-        for(SMPState s:one_states)
+        for (SMPState s : one_states)
             degrees.add(s.extension.elementsCount);
 
-        List<SMPState> result=new ArrayList<SMPState>();
+        int sum = 0;
+        int index = 0;
 
-        for(int x=one_states.size()-1;x>0;x--){
-            SMPState state=one_states.get(x);
-            one_states.remove(x);
-            if(state.extension.elementsCount==0) continue;
-            if(x>cut_point){
-                result.add(state);
-            }else{
-                while (!state.extension.isEmpty()) {
-                    int w = state.extension.get(state.extension.size() - 1);
-                    state.extension.remove(state.extension.size() - 1);
-                    result.add(state.expand(w, graph));
-                }
-            }
-
+        while (sum <= 50000 && index < 5000) {
+            sum += degrees.get(index);
+            index++;
         }
 
 
-//        degrees.resize(degrees.elementsCount/8);
-//        double degree_threshold = DoubleMath.mean(degrees.toArray());
-//
-//        if(degree_threshold<degrees.get(256))
-//            degree_threshold=degrees.get(256);
-//
-//
-//
-//        for(SMPState state:one_states){
-//
-//            if(state.extension.elementsCount>degree_threshold){//expand
-//                while (!state.extension.isEmpty()) {
-//                    int w = state.extension.get(state.extension.size() - 1);
-//                    state.extension.remove(state.extension.size() - 1);
-//                    result.add(state.expand(w, graph));
-//                }
-//            }
-//            else
-//                result.add(state);
-//        }
+        List<SMPState> result=new ArrayList<SMPState>();
+
+        for (int i = 0; i < index; i++) {
+            SMPState state = one_states.get(i);
+            while (!state.extension.isEmpty()) {
+                int w = state.extension.get(state.extension.size() - 1);
+                state.extension.remove(state.extension.size() - 1);
+                result.add(state.expand(w, graph));
+            }
+        }
+
+        for (int i = index; i < one_states.size(); i++) {
+            SMPState state = one_states.get(i);
+            if (state.extension.elementsCount == 0) continue;
+            result.add(state);
+        }
         return result;
     }
 
