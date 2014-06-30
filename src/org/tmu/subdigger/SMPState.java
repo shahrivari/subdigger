@@ -12,8 +12,8 @@ import java.util.List;
  * Created by Saeed on 4/12/14.
  */
 public class SMPState {
-    int[] subgraph;
-    IntArrayList extension;
+    public int[] subgraph;
+    public IntArrayList extension;
 
     public SMPState() {
     }
@@ -45,6 +45,16 @@ public class SMPState {
         }
 
         return new_state;
+    }
+
+    public List<SMPState> expandAll(Graph graph){
+        List<SMPState> list=new ArrayList<SMPState>();
+        while (!extension.isEmpty()) {
+            int w = extension.get(extension.size() - 1);
+            extension.remove(extension.size() - 1);
+            list.add(expand(w, graph));
+        }
+        return list;
     }
 
     public static List<SMPState> getAllBiStates(Graph graph) {
