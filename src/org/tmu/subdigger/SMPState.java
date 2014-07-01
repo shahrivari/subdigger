@@ -26,6 +26,18 @@ public class SMPState {
                 extension.add(v);
     }
 
+    public static SMPState makeState(int root, int second, Graph graph) {
+        SMPState state = new SMPState(root, graph.getNeighbors(root));
+        while (!state.extension.isEmpty()) {
+            int w = state.extension.get(state.extension.size() - 1);
+            state.extension.remove(state.extension.size() - 1);
+            if (w != second)
+                continue;
+            return state.expand(w, graph);
+        }
+        return null;
+    }
+
     public SMPState expand(int w, Graph graph) {
         SMPState new_state = new SMPState();
         new_state.subgraph = Arrays.copyOf(subgraph, subgraph.length + 1);
@@ -100,7 +112,9 @@ public class SMPState {
         Ordering<SMPState> ordering = new Ordering<SMPState>() {
             @Override
             public int compare(SMPState state1, SMPState state2) {
-                return state1.extension.elementsCount > state2.extension.elementsCount ? +1 : state1.extension.elementsCount < state2.extension.elementsCount ? -1 : 0;
+                int a = state1.extension.elementsCount;
+                int b = state2.extension.elementsCount;
+                return a > b ? +1 : a < b ? -1 : 0;
             }
         };
         List<SMPState> sorted = ordering.reverse().sortedCopy(list);
@@ -111,37 +125,7 @@ public class SMPState {
         if(graph.vertexCount()<7000)
             return getAllBiStatesOrderedByLoad(graph);
 
-        List<SMPState> one_states = getAllOneStatesOrderedByLoad(graph);
-        IntArrayList degrees=IntArrayList.newInstance();
-        for (SMPState s : one_states)
-            degrees.add(s.extension.elementsCount);
-
-        int sum = 0;
-        int index = 0;
-
-        while (sum <= 50000 && index < 5000) {
-            sum += degrees.get(index);
-            index++;
-        }
-
-
-        List<SMPState> result=new ArrayList<SMPState>();
-
-        for (int i = 0; i < index; i++) {
-            SMPState state = one_states.get(i);
-            while (!state.extension.isEmpty()) {
-                int w = state.extension.get(state.extension.size() - 1);
-                state.extension.remove(state.extension.size() - 1);
-                result.add(state.expand(w, graph));
-            }
-        }
-
-        for (int i = index; i < one_states.size(); i++) {
-            SMPState state = one_states.get(i);
-            if (state.extension.elementsCount == 0) continue;
-            result.add(state);
-        }
-        return result;
+        return getAllOneStatesOrderedByLoad(graph);
     }
 
 
@@ -161,9 +145,6 @@ public class SMPState {
         result.deleteCharAt(result.length() - 1);
         }
         return result.toString();
-
-//        String result = Arrays.toString(subgraph) + "  extentsion:" + extension.toString();//Arrays.toString(extension);
-//        return result;
     }
 
     public static SMPState fromString(String s) {

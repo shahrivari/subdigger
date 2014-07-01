@@ -56,32 +56,7 @@ public class SMPEnumerator {
 
     public static long enumerateNonIsoInParallel(final Graph graph, final int k, final int thread_count, final String out_path) throws IOException, InterruptedException {
         final AtomicLong found = new AtomicLong(0);
-        //final AtomicLong lastReport = new AtomicLong(0);
-//        final ArrayDeque<SMPState> queue = new ArrayDeque<SMPState>();
-//        for (int v : graph.getVertices()) {
-//            SMPState state = new SMPState(v, graph.getNeighbors(v));
-//            while (!state.extension.isEmpty()) {
-//                int w = state.extension.get(state.extension.size() - 1);
-//                state.extension.remove(state.extension.size() - 1);
-//                queue.push(state.expand(w, graph));
-//            }
-//        }
-//
-//        Ordering<SMPState> ordering = new Ordering<SMPState>() {
-//            @Override
-//            public int compare(SMPState state1, SMPState state2) {
-//                int a = graph.getDegree(state1.subgraph[0]) + graph.getDegree(state1.subgraph[1]);
-//                int b = graph.getDegree(state2.subgraph[0]) + graph.getDegree(state2.subgraph[1]);
-//                return a > b ? +1 : a < b ? -1 : 0;
-//            }
-//        };
-//        List<SMPState> sorted = ordering.reverse().sortedCopy(queue);
         List<SMPState> sorted = SMPState.getSeedStates(graph); //null;
-//        if (graph.vertexCount() < 100000)
-//            sorted = SMPState.getAllBiStatesOrderedByLoad(graph);
-//        else
-//            sorted = SMPState.getAllBiStates(graph);
-
         final ConcurrentLinkedQueue<SMPState> bq = new ConcurrentLinkedQueue<SMPState>(sorted);
 
         System.out.printf("Initial states: %,d\n", bq.size());

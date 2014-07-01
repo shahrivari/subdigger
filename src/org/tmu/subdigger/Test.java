@@ -10,39 +10,31 @@ import java.io.IOException;
 public class Test {
 
     public static void main(String[] args) throws IOException, InterruptedException {
-        int k = 3;
+        int k = 4;
         Stopwatch stopwatch = Stopwatch.createStarted();
         long mem = Runtime.getRuntime().freeMemory();
-        Graph g = HashGraph.readStructureFromFile("F:\\nets\\web-BerkStan.txt");
+        Graph g = HashGraph.readStructureFromFile("X:\\networks\\marusumi\\jazz.txt");
         g.printInfo();
         System.out.printf("Used: %,d\n", mem - Runtime.getRuntime().freeMemory());
         System.out.printf("Time:%s\n", stopwatch);
         stopwatch.reset();
-        SMPState.getSeedStates(g);
 
-//        List<SMPState> states = SMPState.getAllBiStates(g);
-//
-//        String s;
-//        SMPState st;
-//        for (SMPState state : states) {
-//            s = state.toString();
-//            st = SMPState.fromString(s);
-//            if (!st.toString().equals(s))
-//                throw new IllegalStateException();
-//        }
 
         SMPEnumerator.setVerbose(true);
         stopwatch.start();
         long found = SMPEnumerator.enumerateNonIsoInParallel(g, k, 4, "x:\\out.txt");
         System.out.printf("Found: %,d \t time:%s\n", found,stopwatch);
 
-        stopwatch.reset().start();
-//        LongLongOpenHashMap res=SubgraphEnumerator.enumerateAllHPPC(g, k);
-//        found=0;
-//        for(LongLongCursor cur:res)
-//            found+=cur.value;
-//        System.out.printf("Found: %,d \t time:%s\n", found,stopwatch);
-
+        found = 0;
+        for (int v : g.getVertices()) {
+            for (int w : g.getNeighbors(v)) {
+                SMPState new_state = SMPState.makeState(v, w, g);
+                if (new_state == null)
+                    continue;
+                found += SubgraphEnumerator.enumerateState(g, new_state, k).totalFreq();
+            }
+        }
+        System.out.printf("Found: %,d \t time:%s\n", found, stopwatch);
     }
 
 }
