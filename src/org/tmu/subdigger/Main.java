@@ -24,6 +24,7 @@ public class Main {
         options.addOption("mc", true, "maximum subgraphs count to stop. Default is infinity i.e. enumerate all.");
         options.addOption("n", "nonisomorphic", false, "enumerate just nonisomorphic subgraphs.");
         options.addOption("c", "count", false, "count all subgraphs");
+        options.addOption("f", "fast", false, "fast isomorphism detection.");
         options.addOption("t", "threads", true, "number of threads to use");
         options.addOption("silent", false, "suppress progress report.");
         HelpFormatter formatter = new HelpFormatter();
@@ -52,6 +53,9 @@ public class Main {
                 threads = Integer.parseInt(line.getOptionValue("t"));
             }
 
+            if (line.hasOption("f")) {
+                SubGraphStructure.beFast = true;
+            }
 
             if (line.hasOption("o")) {
                 output_path = line.getOptionValue("o");

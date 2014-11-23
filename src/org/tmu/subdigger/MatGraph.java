@@ -7,17 +7,76 @@ import java.io.*;
 import java.util.*;
 
 public class MatGraph implements Graph {
-    public class Adjacency {
-        IntOpenHashSet outSet = new IntOpenHashSet();
-        IntOpenHashSet allSet = new IntOpenHashSet();
-        int[] allArr = new int[0];
-        int[] outArr = new int[0];
-    }
-
     public List<Adjacency> table = new ArrayList<Adjacency>();
     public HashSet<Integer> vertices = new HashSet<Integer>();
     public boolean[] adjArr;
     private int edgeCount = 0;
+
+    public static MatGraph readGraph(Reader reader) throws IOException {
+        BufferedReader br = new BufferedReader(reader);
+        String line;
+        MatGraph graph = new MatGraph();
+
+        while ((line = br.readLine()) != null) {
+            if (line.isEmpty())
+                continue;
+            if (line.startsWith("#")) {
+                System.out.printf("Skipped a line: [%s]\n", line);
+                continue;
+            }
+            String[] tokens = line.split("\\s+");
+            if (tokens.length < 2) {
+                System.out.printf("Skipped a line: [%s]\n", line);
+                continue;
+                //throw new IOException("The input file is malformed!");
+            }
+            int src = Integer.parseInt(tokens[0]);
+            int dest = Integer.parseInt(tokens[1]);
+            graph.addEdge(src, dest);
+        }
+        br.close();
+        graph.update();
+        return graph;
+    }
+
+    public static MatGraph readStructure(Reader reader) throws IOException {
+        BufferedReader br = new BufferedReader(reader);
+        String line;
+        MatGraph graph = new MatGraph();
+        Map<String, Integer> map = new HashMap<String, Integer>();
+        int last_v = 0;
+
+        while ((line = br.readLine()) != null) {
+            if (line.isEmpty())
+                continue;
+            if (line.startsWith("#")) {
+                System.out.printf("Skipped a line: [%s]\n", line);
+                continue;
+            }
+            String[] tokens = line.split("\\s+");
+            if (tokens.length < 2) {
+                System.out.printf("Skipped a line: [%s]\n", line);
+                continue;
+                //throw new IOException("The input file is malformed!");
+            }
+            if (!map.containsKey(tokens[0]))
+                map.put(tokens[0], last_v++);
+            if (!map.containsKey(tokens[1]))
+                map.put(tokens[1], last_v++);
+            graph.addEdge(map.get(tokens[0]), map.get(tokens[1]));
+        }
+        br.close();
+        graph.update();
+        return graph;
+    }
+
+    public static MatGraph readFromFile(String path) throws IOException {
+        return readGraph(new FileReader(path));
+    }
+
+    public static MatGraph readStructureFromFile(String path) throws IOException {
+        return readStructure(new FileReader(path));
+    }
 
     public int vertexCount() {
         return vertices.size();
@@ -106,7 +165,6 @@ public class MatGraph implements Graph {
         return adjArr[table.size() * v + w];
     }
 
-
     final public int getDegreeSum() {
         int sum = 0;
         for (int v : vertices)
@@ -138,79 +196,15 @@ public class MatGraph implements Graph {
 
     }
 
-
     public void printInfo() {
         System.out.printf("Total vertices: %,d\n", vertexCount());
         System.out.printf("Total edges: %,d\n", edgeCount);
-        System.out.printf("Average degree: %f\n", getDegreeSum() / (double) vertexCount());
-    }
-
-    public static MatGraph readGraph(Reader reader) throws IOException {
-        BufferedReader br = new BufferedReader(reader);
-        String line;
-        MatGraph graph = new MatGraph();
-
-        while ((line = br.readLine()) != null) {
-            if (line.isEmpty())
-                continue;
-            if (line.startsWith("#")) {
-                System.out.printf("Skipped a line: [%s]\n", line);
-                continue;
-            }
-            String[] tokens = line.split("\\s+");
-            if (tokens.length < 2) {
-                System.out.printf("Skipped a line: [%s]\n", line);
-                continue;
-                //throw new IOException("The input file is malformed!");
-            }
-            int src = Integer.parseInt(tokens[0]);
-            int dest = Integer.parseInt(tokens[1]);
-            graph.addEdge(src, dest);
-        }
-        br.close();
-        graph.update();
-        return graph;
-    }
-
-
-    public static MatGraph readStructure(Reader reader) throws IOException {
-        BufferedReader br = new BufferedReader(reader);
-        String line;
-        MatGraph graph = new MatGraph();
-        Map<String, Integer> map = new HashMap<String, Integer>();
-        int last_v = 0;
-
-        while ((line = br.readLine()) != null) {
-            if (line.isEmpty())
-                continue;
-            if (line.startsWith("#")) {
-                System.out.printf("Skipped a line: [%s]\n", line);
-                continue;
-            }
-            String[] tokens = line.split("\\s+");
-            if (tokens.length < 2) {
-                System.out.printf("Skipped a line: [%s]\n", line);
-                continue;
-                //throw new IOException("The input file is malformed!");
-            }
-            if (!map.containsKey(tokens[0]))
-                map.put(tokens[0], last_v++);
-            if (!map.containsKey(tokens[1]))
-                map.put(tokens[1], last_v++);
-            graph.addEdge(map.get(tokens[0]), map.get(tokens[1]));
-        }
-        br.close();
-        graph.update();
-        return graph;
-    }
-
-
-    public static MatGraph readFromFile(String path) throws IOException {
-        return readGraph(new FileReader(path));
-    }
-
-    public static MatGraph readStructureFromFile(String path) throws IOException {
-        return readStructure(new FileReader(path));
+        double degree_mean = getDegreeSum() / (double) vertexCount();
+        System.out.printf("Average degree: %f\n", degree_mean);
+        double variance = 0;
+        for (int v : vertices)
+            variance += (degree_mean - getDegree(v)) * (degree_mean - getDegree(v));
+        System.out.printf("STD degree: %f\n", Math.sqrt(variance / vertexCount()));
     }
 
     public void printToFile(String path) throws IOException {
@@ -222,6 +216,13 @@ public class MatGraph implements Graph {
             writer.write(v + "\t" + Arrays.toString(adj.allArr) + "\n");
         }
         writer.close();
+    }
+
+    public class Adjacency {
+        IntOpenHashSet outSet = new IntOpenHashSet();
+        IntOpenHashSet allSet = new IntOpenHashSet();
+        int[] allArr = new int[0];
+        int[] outArr = new int[0];
     }
 
 }
