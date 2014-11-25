@@ -17,13 +17,13 @@ import java.util.concurrent.atomic.AtomicLong;
 public class SMPEnumerator {
 
     private static boolean useHPPC = true;
+    private static int uniqueCap = 4 * 1000 * 1000;
+    private static long maxCount = Long.MAX_VALUE;
+    private static boolean verbose = true;
 
     public static void setUseHPPC(boolean useHPPC) {
         SMPEnumerator.useHPPC = useHPPC;
     }
-
-
-    private static int uniqueCap = 4 * 1000 * 1000;
 
     public static int getUniqueCap() {
         return uniqueCap;
@@ -33,8 +33,6 @@ public class SMPEnumerator {
         uniqueCap = cap;
     }
 
-    private static long maxCount = Long.MAX_VALUE;
-
     public static long getMaxCount() {
         return maxCount;
     }
@@ -42,9 +40,6 @@ public class SMPEnumerator {
     public static void setMaxCount(long maxCount) {
         SMPEnumerator.maxCount = maxCount;
     }
-
-
-    private static boolean verbose = true;
 
     public static boolean isVerbose() {
         return verbose;
@@ -146,7 +141,9 @@ public class SMPEnumerator {
         for (int i = 0; i < thread_count; i++)
             threads[i].join();
 
+        System.out.printf("Flushing LabelMap to disk. Total %,d subgraphs.\n", signatureRepo.size());
         signatureRepo.close();
+
 
         return found.get();
     }
