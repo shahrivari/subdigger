@@ -25,6 +25,7 @@ public class Main {
         options.addOption("n", "nonisomorphic", false, "enumerate just nonisomorphic subgraphs.");
         options.addOption("c", "count", false, "count all subgraphs");
         options.addOption("f", "fast", false, "fast isomorphism detection.");
+        options.addOption("r", "random", false, "do not sort initial states.");
         options.addOption("t", "threads", true, "number of threads to use");
         options.addOption("silent", false, "suppress progress report.");
         HelpFormatter formatter = new HelpFormatter();
@@ -96,6 +97,12 @@ public class Main {
                     SignatureRepo.setCapacity(Integer.parseInt(line.getOptionValue("lm")));
                 }
                 System.out.printf("Label map size: %,d.\n", SignatureRepo.getCapacity());
+
+                if (line.hasOption("r")) {
+                    System.out.println("Using random initial states!");
+                    SMPEnumerator.randomStates = true;
+                }
+
 
                 if (line.hasOption("silent"))
                     SMPEnumerator.setVerbose(false);

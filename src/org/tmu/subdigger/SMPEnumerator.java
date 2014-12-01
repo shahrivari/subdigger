@@ -16,6 +16,7 @@ import java.util.concurrent.atomic.AtomicLong;
  */
 public class SMPEnumerator {
 
+    public static boolean randomStates = false;
     private static boolean useHPPC = true;
     private static int uniqueCap = 4 * 1000 * 1000;
     private static long maxCount = Long.MAX_VALUE;
@@ -49,9 +50,19 @@ public class SMPEnumerator {
         SMPEnumerator.verbose = verbose;
     }
 
+
     public static long enumerateNonIsoInParallel(final Graph graph, final int k, final int thread_count, final String out_path) throws IOException, InterruptedException {
         final AtomicLong found = new AtomicLong(0);
-        List<SMPState> sorted = SMPState.getSeedStates(graph); //null;
+        List<SMPState> sorted = null;
+        if (randomStates) {
+//            if(graph.vertexCount()>7000)
+//                sorted = SMPState.getAllOneStates(graph);
+//            else
+            sorted = SMPState.getSeedStatesRandomly(graph);
+            //Collections.shuffle(sorted);
+        } else
+            sorted = SMPState.getSeedStates(graph);
+
         final ConcurrentLinkedQueue<SMPState> bq = new ConcurrentLinkedQueue<SMPState>(sorted);
 
         System.out.printf("Initial states: %,d\n", bq.size());
@@ -147,4 +158,5 @@ public class SMPEnumerator {
 
         return found.get();
     }
+
 }

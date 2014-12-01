@@ -6,6 +6,7 @@ import com.google.common.collect.Ordering;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -38,37 +39,6 @@ public class SMPState {
         return null;
     }
 
-    public SMPState expand(int w, Graph graph) {
-        SMPState new_state = new SMPState();
-        new_state.subgraph = Arrays.copyOf(subgraph, subgraph.length + 1);
-        new_state.subgraph[new_state.subgraph.length - 1] = w;
-
-        int[] w_neighs = graph.getNeighbors(w);
-        new_state.extension = new IntArrayList(extension.size() + w_neighs.length);
-        for (int i = 0; i < extension.size(); i++)
-            new_state.extension.add(extension.buffer[i]);
-
-        int j = 0;
-        for (int i = 0; i < w_neighs.length; i++) {
-            if (w_neighs[i] <= subgraph[0]) continue;
-            for (j = 0; j < subgraph.length; j++)
-                if (graph.areNeighbor(subgraph[j], w_neighs[i])) break;
-            if (j == subgraph.length) new_state.extension.add(w_neighs[i]);
-        }
-
-        return new_state;
-    }
-
-    public List<SMPState> expandAll(Graph graph){
-        List<SMPState> list=new ArrayList<SMPState>();
-        while (!extension.isEmpty()) {
-            int w = extension.get(extension.size() - 1);
-            extension.remove(extension.size() - 1);
-            list.add(expand(w, graph));
-        }
-        return list;
-    }
-
     public static List<SMPState> getAllBiStates(Graph graph) {
         List<SMPState> list = new ArrayList<SMPState>();
 
@@ -98,7 +68,6 @@ public class SMPState {
         return sorted;
     }
 
-
     public static List<SMPState> getAllOneStates(Graph graph) {
         List<SMPState> list = new ArrayList<SMPState>();
 
@@ -121,30 +90,33 @@ public class SMPState {
         return sorted;
     }
 
-    public static List<SMPState> getSeedStates(final Graph graph){
-        if(graph.vertexCount()<7000)
+    public static List<SMPState> getSeedStates(final Graph graph) {
+        if (graph.vertexCount() < 7000)
             return getAllBiStatesOrderedByLoad(graph);
 
         return getAllOneStatesOrderedByLoad(graph);
     }
 
+    public static List<SMPState> getSeedStatesRandomly(final Graph graph) {
+        List<SMPState> list = getAllOneStates(graph);
+        double mean = 0;
+        for (SMPState s : list)
+            mean += s.extension.size();
+        mean = mean / list.size();
 
-    @Override
-    public String toString() {
-        StringBuilder result = new StringBuilder();
-        if (subgraph.length > 0) {
-            for (int x : subgraph)
-            result.append(x + ",");
-        result.deleteCharAt(result.length() - 1);
+        List<SMPState> result = new ArrayList<SMPState>();
+        for (SMPState state : list) {
+            if (state.extension.size() < mean * Math.sqrt(mean))
+                result.add(state);
+            else
+                while (!state.extension.isEmpty()) {
+                    int w = state.extension.get(state.extension.size() - 1);
+                    state.extension.remove(state.extension.size() - 1);
+                    result.add(state.expand(w, graph));
+                }
         }
-        result.append("#");
-
-        if (extension.size() > 0) {
-            for (IntCursor x : extension)
-            result.append(x.value + ",");
-        result.deleteCharAt(result.length() - 1);
-        }
-        return result.toString();
+        Collections.shuffle(result);
+        return result;
     }
 
     public static SMPState fromString(String s) {
@@ -163,6 +135,55 @@ public class SMPState {
             for (String x : tokens[1].split(","))
                 state.extension.add(Integer.parseInt(x));
         return state;
+    }
+
+    public SMPState expand(int w, Graph graph) {
+        SMPState new_state = new SMPState();
+        new_state.subgraph = Arrays.copyOf(subgraph, subgraph.length + 1);
+        new_state.subgraph[new_state.subgraph.length - 1] = w;
+
+        int[] w_neighs = graph.getNeighbors(w);
+        new_state.extension = new IntArrayList(extension.size() + w_neighs.length);
+        for (int i = 0; i < extension.size(); i++)
+            new_state.extension.add(extension.buffer[i]);
+
+        int j = 0;
+        for (int i = 0; i < w_neighs.length; i++) {
+            if (w_neighs[i] <= subgraph[0]) continue;
+            for (j = 0; j < subgraph.length; j++)
+                if (graph.areNeighbor(subgraph[j], w_neighs[i])) break;
+            if (j == subgraph.length) new_state.extension.add(w_neighs[i]);
+        }
+
+        return new_state;
+    }
+
+    public List<SMPState> expandAll(Graph graph) {
+        List<SMPState> list = new ArrayList<SMPState>();
+        while (!extension.isEmpty()) {
+            int w = extension.get(extension.size() - 1);
+            extension.remove(extension.size() - 1);
+            list.add(expand(w, graph));
+        }
+        return list;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder result = new StringBuilder();
+        if (subgraph.length > 0) {
+            for (int x : subgraph)
+            result.append(x + ",");
+        result.deleteCharAt(result.length() - 1);
+        }
+        result.append("#");
+
+        if (extension.size() > 0) {
+            for (IntCursor x : extension)
+            result.append(x.value + ",");
+        result.deleteCharAt(result.length() - 1);
+        }
+        return result.toString();
     }
 
 }
